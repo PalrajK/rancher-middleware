@@ -6,7 +6,7 @@ curl -sfL https://get.rke2.io | sh -
 mkdir -p /etc/rancher/rke2
 cd /etc/rancher/rke2/
 
-cat /var/lib/rancher/rke2/server/node-token > token used for other control nodes and worker nodes
+
 
 vi config.yaml
 

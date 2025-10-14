@@ -25,9 +25,4 @@ systemctl start rke2-server.service
 systemctl status rke2-server.service
 journalctl -u rke2-server.service
 
-
-cp /etc/rancher/rke2/rke2.yaml ~/.kube/config
-export PATH=$PATH:/var/lib/rancher/rke2/bin
-kubectl version
-kubectl get nodes
-kubectl get po -A
+cat /var/lib/rancher/rke2/server/node-token > token used for other control nodes and worker nodes
