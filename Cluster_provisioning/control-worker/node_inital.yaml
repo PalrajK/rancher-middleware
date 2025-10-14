@@ -1,0 +1,33 @@
+swapoff -a
+systemctl disable firewalld apparmor
+systemctl stop firewalld apparmor
+sudo ufw status
+curl -sfL https://get.rke2.io | sh -     
+mkdir -p /etc/rancher/rke2
+
+
+vi config.yaml
+
+# Load balancer endpoint for HA control plane access
+server: "https://rke2-nlb-f04fd65c1a351d97.elb.us-east-1.amazonaws.com:9345"
+tls-san:
+  - "rke2-nlb-f04fd65c1a351d97.elb.us-east-1.amazonaws.com"
+
+
+# Logging
+log-level: "info"
+log-dir: "/var/log/rke2"
+write-kubeconfig-mode: "0644"
+
+
+systemctl enable rke2-server.service
+systemctl start rke2-server.service
+systemctl status rke2-server.service
+journalctl -u rke2-server.service
+
+
+cp /etc/rancher/rke2/rke2.yaml ~/.kube/config
+export PATH=$PATH:/var/lib/rancher/rke2/bin
+kubectl version
+kubectl get nodes
+kubectl get po -A
