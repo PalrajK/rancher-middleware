@@ -1,0 +1,36 @@
+
+A load balancer in front of the control-plane nodes
+
+A DNS record ( runwal.duckdns.org ) pointing to the load balancer
+
+sudo snap install helm --classic
+
+kubectl create namespace cattle-system
+
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.2/cert-manager.yaml
+
+kubectl get pods -n cert-manager
+
+helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
+helm repo update
+
+
+kubectl create namespace cattle-system
+
+helm install rancher rancher-latest/rancher \
+  --namespace cattle-system \
+  --set hostname=runwal.duckdns.org \
+  --set replicas=3 \
+  --set bootstrapPassword=admin \
+  --set ingress.tls.source=letsEncrypt \
+  --set letsEncrypt.email=kumareson1987@example.com \
+  --set letsEncrypt.environment=production
+
+
+
+kubectl -n cattle-system rollout status deploy/rancher
+kubectl get pods -n cattle-system
+
+
+https://runwal.duckdns.org
+

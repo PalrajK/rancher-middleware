@@ -1,0 +1,46 @@
+swapoff -a
+systemctl disable firewalld apparmor
+systemctl stop firewalld apparmor
+sudo ufw status
+
+curl -sfL https://get.rke2.io | INSTALL_RKE2_TYPE="agent" sh -
+
+mkdir -p /etc/rancher/rke2
+cd /etc/rancher/rke2/
+
+vi config.yaml
+
+
+# Cluster bootstrap token (same across all nodes)
+token: "K1052e5774c56e9b34a2d9d77120bf2e257ec1c6c0416557409fdaea0c623d0652d::server:69992005a5f806ab527eabb1ce33870b"
+
+# Load balancer endpoint for HA control plane access
+server: "https://rke2-nlb-f04fd65c1a351d97.elb.us-east-1.amazonaws.com:9345"
+tls-san:
+  - "rke2-nlb-f04fd65c1a351d97.elb.us-east-1.amazonaws.com"
+  - "control-node-1"
+  - "control-node-2"
+  - "control-node-3"
+  - "ip-10-0-0-67.ec2.internal"
+  - "ip-10-0-1-36.ec2.internal"
+  - "ip-10-0-2-224.ec2.internal"
+
+# Node identity
+node-name: "worker-node-2"
+
+# Explicit node IP
+node-ip: 10.0.0.100
+
+# CNI plugin (Canal is default and stable)
+cni: canal        
+
+# Logging
+log-level: "info"
+log-dir: "/var/log/rke2"
+write-kubeconfig-mode: "0644"
+
+
+systemctl enable rke2-agent.service
+systemctl start rke2-agent.service  
+systemctl status rke2-agent.service
+journalctl -u rke2-agent.service
