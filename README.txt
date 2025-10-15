@@ -10,19 +10,10 @@ Terraform is used for Provisioning Pre-Requeties
 #ADD IP hostname and FQDN on all three control plane node
  
 #Hostname and internal DNS mapping 
- 
-10.0.0.67   ip-10-0-0-67    ip-10-0-0-67.ec2.internal  control-node-1
-10.0.1.36   ip-10-0-1-36    ip-10-0-1-36.ec2.internal  control-node-2
-10.0.2.224  ip-10-0-2-224   ip-10-0-2-224.ec2.internal  control-node-3
+10.0.0.205  ip-10-0-0-205  ip-10-0-0-205.ec2.internal 
+10.0.1.225  ip-10-0-1-225  ip-10-0-1-225.ec2.internal
+10.0.2.121  ip-10-0-2-121  ip-10-0-2-121.ec2.internal
 
-
-#ADD IP hostname and FQDN on all three worker node
- 
-#Hostname and internal DNS mapping 
- 
-10.0.0.100   ip-10-0-0-100   ip-10-0-0-100.ec2.internal  worker-node-1
-10.0.1.23    ip-10-0-1-23    ip-10-0-1-23.ec2.internal   worker-node-2
-10.0.2.133   ip-10-0-2-133   ip-10-0-2-133.ec2.internal  worker-node-3
 
 
 #Cluster Load Balancer DNS name
