@@ -9,32 +9,25 @@ cd /etc/rancher/rke2/
 vi config.yaml
 
 # Cluster bootstrap token (same across all nodes)
-token: "K1052e5774c56e9b34a2d9d77120bf2e257ec1c6c0416557409fdaea0c623d0652d::server:69992005a5f806ab527eabb1ce33870b"
+token: K100110514d01b1293a952bde566643bb026d70d2faba24c21c808b8917b426dc7f::server:my-shared-secret-12345
 
-
+server: "https://rke2-nlb-88914a42d48644c0.elb.us-east-1.amazonaws.com:9345"
 # Load balancer endpoint for HA control plane access
-server: "https://rke2-nlb-f04fd65c1a351d97.elb.us-east-1.amazonaws.com:9345"
 tls-san:
-  - "rke2-nlb-f04fd65c1a351d97.elb.us-east-1.amazonaws.com"
-  - "control-node-1"
-  - "control-node-2"
-  - "control-node-3"
-  - "ip-10-0-0-67.ec2.internal"
-  - "ip-10-0-1-36.ec2.internal"
-  - "ip-10-0-2-224.ec2.internal"
+  - rke2-nlb-88914a42d48644c0.elb.us-east-1.amazonaws.com
+  - ip-10-0-0-205.ec2.internal
+  - ip-10-0-1-225.ec2.internal
+  - ip-10-0-2-121.ec2.internal
+
+
 
 # Node identity
-node-name: "control-node-3"
+node-name: "ip-10-0-2-121"
 
 # CNI plugin (Canal is default and stable)
 cni: canal
 
-# Node IP
-node-ip: 10.0.2.224
-
 # Logging
-log-level: "info"
-log-dir: "/var/log/rke2"
 write-kubeconfig-mode: "0644"
 
 
