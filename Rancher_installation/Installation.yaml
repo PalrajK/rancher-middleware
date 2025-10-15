@@ -1,36 +1,122 @@
 
-A load balancer in front of the control-plane nodes
 
-A DNS record ( runwal.duckdns.org ) pointing to the load balancer
+/etc/rancher/rke2# kbectl cluster-info
+Kubernetes control plane is running at https://127.0.0.1:6443
+CoreDNS is running at https://127.0.0.1:6443/api/v1/namespaces/kube-system/services/rke2-coredns-rke2-coredns:udp-53/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+root@ip-10-0-0-205:/etc/rancher/rke2# kubectl get componentstatuses
+Warning: v1 ComponentStatus is deprecated in v1.19+
+NAME                 STATUS    MESSAGE   ERROR
+scheduler            Healthy   ok        
+controller-manager   Healthy   ok        
+etcd-0               Healthy   ok        
+
+/etc/rancher/rke2# kubectl get nodes
+NAME            STATUS   ROLES                       AGE    VERSION
+ip-10-0-0-112   Ready    <none>                      36m    v1.33.5+rke2r1
+ip-10-0-0-205   Ready    control-plane,etcd,master   133m   v1.33.5+rke2r1
+ip-10-0-1-192   Ready    <none>                      35m    v1.33.5+rke2r1
+ip-10-0-1-225   Ready    control-plane,etcd,master   121m   v1.33.5+rke2r1
+ip-10-0-2-121   Ready    control-plane,etcd,master   118m   v1.33.5+rke2r1
+ip-10-0-2-178   Ready    <none>                      34m    v1.33.5+rke2r1
+
+/etc/rancher/rke2# kubectl get nodes -o wide
+NAME            STATUS   ROLES                       AGE    VERSION          INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION   CONTAINER-RUNTIME
+ip-10-0-0-112   Ready    <none>                      36m    v1.33.5+rke2r1   10.0.0.112    <none>        Ubuntu 22.04.3 LTS   6.2.0-1012-aws   containerd://2.1.4-k3s2
+ip-10-0-0-205   Ready    control-plane,etcd,master   133m   v1.33.5+rke2r1   10.0.0.205    <none>        Ubuntu 22.04.3 LTS   6.2.0-1012-aws   containerd://2.1.4-k3s2
+ip-10-0-1-192   Ready    <none>                      35m    v1.33.5+rke2r1   10.0.1.192    <none>        Ubuntu 22.04.3 LTS   6.2.0-1012-aws   containerd://2.1.4-k3s2
+ip-10-0-1-225   Ready    control-plane,etcd,master   122m   v1.33.5+rke2r1   10.0.1.225    <none>        Ubuntu 22.04.3 LTS   6.2.0-1012-aws   containerd://2.1.4-k3s2
+ip-10-0-2-121   Ready    control-plane,etcd,master   118m   v1.33.5+rke2r1   10.0.2.121    <none>        Ubuntu 22.04.3 LTS   6.2.0-1012-aws   containerd://2.1.4-k3s2
+ip-10-0-2-178   Ready    <none>                      34m    v1.33.5+rke2r1   10.0.2.178    <none>        Ubuntu 22.04.3 LTS   6.2.0-1012-aws   containerd://2.1.4-k3s2
+
+
+/etc/rancher/rke2# kubectl get pods -n kube-system -o wide | grep -E 'calico|canal|flannel|cilium'
+helm-install-rke2-canal-rsppz                          0/1     Completed   0          133m   10.0.0.205   ip-10-0-0-205   <none>           <none>
+rke2-canal-hkbpf                                       2/2     Running     0          36m    10.0.0.112   ip-10-0-0-112   <none>           <none>
+rke2-canal-jqtxm                                       2/2     Running     0          118m   10.0.2.121   ip-10-0-2-121   <none>           <none>
+rke2-canal-vtn96                                       2/2     Running     0          122m   10.0.1.225   ip-10-0-1-225   <none>           <none>
+rke2-canal-wbg9k                                       2/2     Running     0          34m    10.0.2.178   ip-10-0-2-178   <none>           <none>
+rke2-canal-wjmd4                                       2/2     Running     0          133m   10.0.0.205   ip-10-0-0-205   <none>           <none>
+rke2-canal-z2rds                                       2/2     Running     0          35m    10.0.1.192   ip-10-0-1-192   <none>           <none>
+
+
+/etc/rancher/rke2# helm list -n cattle-system
+NAME                     	NAMESPACE    	REVISION	UPDATED                                	STATUS  	CHART                            	APP VERSION
+rancher                  	cattle-system	1       	2025-10-15 19:19:44.921023447 +0000 UTC	deployed	rancher-2.12.2                   	v2.12.2    
+rancher-webhook          	cattle-system	2       	2025-10-15 19:22:55.020617108 +0000 UTC	deployed	rancher-webhook-107.0.2+up0.8.2  	0.8.2      
+system-upgrade-controller	cattle-system	1       	2025-10-15 19:22:20.283734951 +0000 UTC	deployed	system-upgrade-controller-107.0.0	v0.16.0   
+
+-----------------------------------------------
+
+METRIC API SERVER PORT ISSUE
+
+
+The APIService v1beta1.metrics.k8s.io proxies requests to the Metrics Server using HTTPS on port 443 (or 4443 in some setups). But your pod is exposing:
+
+--secure-port=10250
+
+containerPort: 10250
+
+This mismatch causes the aggregator to fail with 502 Bad Gateway when trying to reach the Metrics Server.
+
+You need to change the Metrics Server to use port 443 or 4443, which aligns with the APIService expectations.
+
+Permanent Fix == /var/lib/rancher/rke2/server/manifests/rke2-metrics-server.yaml --> change port from 10250 to 443/4443
+
+
+/var/lib/rancher/rke2/server/token
+
+----------------------------------------------
 
 sudo snap install helm --classic
-
-kubectl create namespace cattle-system
-
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.2/cert-manager.yaml
-
-kubectl get pods -n cert-manager
 
 helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
 helm repo update
 
-
 kubectl create namespace cattle-system
 
-helm install rancher rancher-latest/rancher \
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.yaml
+
+kubectl get pods -n cert-manager
+
+
+#helm install rancher rancher-latest/rancher \
   --namespace cattle-system \
-  --set hostname=runwal.duckdns.org \
+  --set hostname=rke2-nlb-88914a42d48644c0.elb.us-east-1.amazonaws.com \
   --set replicas=3 \
-  --set bootstrapPassword=admin \
-  --set ingress.tls.source=letsEncrypt \
-  --set letsEncrypt.email=kumareson1987@example.com \
-  --set letsEncrypt.environment=production
+  --set bootstrapPassword=admin
+  
+  
+NAME: rancher
+LAST DEPLOYED: Wed Oct 15 19:19:44 2025
+NAMESPACE: cattle-system
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+Rancher Server has been installed.
+
+NOTE: Rancher may take several minutes to fully initialize. Please standby while Certificates are being issued, Containers are started and the Ingress rule comes up.
+
+Check out our docs at https://rancher.com/docs/
+
+## First Time Login
+
+If you provided your own bootstrap password during installation, browse to https://rke2-nlb-88914a42d48644c0.elb.us-east-1.amazonaws.com to get started.
+If this is the first time you installed Rancher, get started by running this command and clicking the URL it generates:
+
+```
+echo https://rke2-nlb-88914a42d48644c0.elb.us-east-1.amazonaws.com/dashboard/?setup=$(kubectl get secret --namespace cattle-system bootstrap-secret -o go-template='{{.data.bootstrapPassword|base64decode}}')
+```
+
+To get just the bootstrap password on its own, run:
+
+```
+kubectl get secret --namespace cattle-system bootstrap-secret -o go-template='{{.data.bootstrapPassword|base64decode}}{{ "\n" }}'
+```
 
 
+Happy Containering!
 
-kubectl -n cattle-system rollout status deploy/rancher
-kubectl get pods -n cattle-system
-
-
-https://runwal.duckdns.org
 
