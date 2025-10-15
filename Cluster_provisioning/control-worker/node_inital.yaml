@@ -8,16 +8,26 @@ mkdir -p /etc/rancher/rke2
 
 vi config.yaml
 
-# Load balancer endpoint for HA control plane access
-server: "https://rke2-nlb-f04fd65c1a351d97.elb.us-east-1.amazonaws.com:9345"
-tls-san:
-  - "rke2-nlb-f04fd65c1a351d97.elb.us-east-1.amazonaws.com"
+# Cluster bootstrap token (same across all nodes)
+token: "my-shared-secret-12345"
 
+# Load balancer endpoint for HA control plane access
+tls-san:
+  - rke2-nlb-88914a42d48644c0.elb.us-east-1.amazonaws.com
+  - ip-10-0-0-205.ec2.internal
+  - ip-10-0-1-225.ec2.internal
+  - ip-10-0-2-121.ec2.internal
+
+
+
+# Node identity
+node-name: "ip-10-0-0-205"
+
+# CNI plugin (Canal is default and stable)
+cni: canal
 
 # Logging
-log-level: "info"
-log-dir: "/var/log/rke2"
-write-kubeconfig-mode: "0644"
+write-kubeconfig-mode: "0644" 
 
 
 systemctl enable rke2-server.service
