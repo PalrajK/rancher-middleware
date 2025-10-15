@@ -38,6 +38,9 @@ systemctl start rke2-server.service
 systemctl status rke2-server.service
 journalctl -u rke2-server.service
 
+start of rke2-serverwe get below token in path - which should be used for other nodes (control / worker) to join the cluster 
+
+cat /var/lib/rancher/rke2/server/node-token 
 
 cp /etc/rancher/rke2/rke2.yaml ~/.kube/config
 export PATH=$PATH:/var/lib/rancher/rke2/bin
