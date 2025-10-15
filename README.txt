@@ -17,7 +17,9 @@ Terraform is used for Provisioning Pre-Requeties
 
 
 #Cluster Load Balancer DNS name
-rke2-nlb-f04fd65c1a351d97.elb.us-east-1.amazonaws.com  (pointing to all three control plane nodes private IPs)    10.0.0.67, 10.0.1.36, 10.0.2.224
+rke2-nlb-f04fd65c1a351d97.elb.us-east-1.amazonaws.com  (pointing to all three control plane nodes private IPs)
 
 
-As Inital step we have to start rke2-server and get token which can be used for other nodes to connect and then we can alter config.yaml  
+As Inital step we have to start rke2-server and get token which can be used for other nodes to connect to cluster
+
+
