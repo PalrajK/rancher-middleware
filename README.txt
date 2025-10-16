@@ -1,7 +1,6 @@
 
 HIGH AVAIALBILITY (Kubernetes cluster) Rancher RKE2 IN AWS INSTALLATION STEPS
 
-
 Terraform is used for Provisioning Pre-Requeties
 
 3 control plane 
