@@ -1,0 +1,27 @@
+Take a Full backup of RKE2 cluster 
+
+sudo rke2 etcd-snapshot save
+
+
+Take it ot the refresh cluster and transfer to new cluster 
+
+file transfer etcd-snapshot-ip-10-0-2-121-1760572802.tar.gz to new cluster (means no data directory should be present) 
+
+
+Restore the Snapshot in the New Cluster
+
+Stop all rke2-server and rke2-agent 
+
+sudo rke2 etcd-snapshot restore --name etcd-snapshot-ip-10-0-2-121-1760572802.tar.gz
+
+
+This creates a new data directory at:
+
+/var/lib/rancher/rke2/server/db/etcd/
+
+
+sudo systemctl start rke2-server
+
+
+kubectl get nodes
+kubectl get pods -A
