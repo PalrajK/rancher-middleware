@@ -1,0 +1,44 @@
+Recommendation in production 
+
+
+Config.yaml of control plane /worker must be fine tunned by below setting.
+
+# Cluster connection settings
+
+token: <CLUSTER_JOIN_TOKEN>
+
+# TLS settings for external access
+tls-san:
+  - <LOAD_BALANCER_IP_OR_DNS>
+  - <ADDITIONAL_PUBLIC_IP_IF_NEEDED>
+
+# Node role
+node-taint:
+  - "CriticalAddonsOnly=true:NoExecute"
+
+# Etcd snapshot settings
+etcd-snapshot-schedule-cron: "0 */6 * * *"  # Every 6 hours
+etcd-snapshot-retention: 5                  # Keep last 5 snapshots
+etcd-snapshot-compressed: true
+
+
+# Disable workload scheduling on master
+disable:
+  - rke2-ingress-nginx
+  - rke2-coredns
+  - rke2-metrics-server
+
+# Optional: Custom labels
+node-label:
+  - "role=master"
+
+
+
+-----------------------
+
+server: Points to your cluster’s load balancer or first master node.
+token: Use the token from /var/lib/rancher/rke2/server/node-token on the first master.
+tls-san: Ensures certificates include external IPs or DNS names.
+node-taint: Prevents scheduling workloads on control-plane nodes.
+disable: Prevents system workloads from running on masters.
+etcd-snapshot-*: Enables automated etcd backups.
