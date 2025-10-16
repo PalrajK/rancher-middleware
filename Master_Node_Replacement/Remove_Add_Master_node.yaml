@@ -1,0 +1,46 @@
+Remove a control plane node from an RKE2 Kubernetes cluster on AWS, you must drain the node, remove it from the cluster, and clean up its RKE2 components.
+
+
+kubectl drain ip-10-0-2-121 --ignore-daemonsets --delete-local-data
+
+kubectl delete node ip-10-0-2-121 
+
+systemctl stop rke2-server
+
+sudo rm -rf /etc/rancher/rke2
+sudo rm -rf /var/lib/rancher/rke2
+sudo rm -rf /var/lib/kubelet
+sudo rm -rf /etc/kubernetes
+
+
+
+Remove from node entry from /etc/rancher/rke2/config.yaml 
+
+Go to Cluster Management → your cluster → Nodes
+Delete the master node from the UI if it still appears
+
+
+kubectl get nodes
+
+
+
+
+Adding a new node into control plane node 
+
+Install RKE2 on the New Node --> curl -sfL https://get.rke2.io | sudo sh -
+
+
+Copy the same configuration for control plane node to new node (FQDN of new node)
+Add FQDN of new node in all control plane node 
+
+
+
+Start the RKE2 Service
+
+sudo systemctl enable rke2-server
+sudo systemctl start rke2-server
+
+
+Verify the Node Joins the Cluster
+
+kubectl get nodes -o wide
