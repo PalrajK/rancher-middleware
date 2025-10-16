@@ -104,10 +104,11 @@ Oct 16 01:52:27 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:27Z" level=in
 Oct 16 01:52:27 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:27Z" level=info msg="Connected to proxy" url="wss://10.0.1.225:9345/v1-rke2/connect"
 Oct 16 01:52:27 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:27Z" level=info msg="Remotedialer connected to proxy" url="wss://10.0.1.225:9345/v1-rke2/connect"
 
-
-
-
 Verify the Node Joins the Cluster
 
 kubectl get nodes -o wide
+
+sudo ETCDCTL_API=3 etcdctl member list
+
+
 
