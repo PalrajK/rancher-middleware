@@ -5,6 +5,27 @@ kubectl drain ip-10-0-2-121 --ignore-daemonsets --delete-local-data
 
 kubectl delete node ip-10-0-2-121 
 
+SSH into Another Control Node
+Check in ETCD Member list -
+
+sudo ETCDCTL_API=3 etcdctl --endpoints=https://127.0.0.1:2379 \
+  --cacert=/var/lib/rancher/rke2/server/tls/etcd/server-ca.crt \
+  --cert=/var/lib/rancher/rke2/server/tls/etcd/server-client.crt \
+  --key=/var/lib/rancher/rke2/server/tls/etcd/server-client.key \
+  member list
+Find the member ID of the node you want to remove ip-10-0-2-12kgasdle
+
+
+Remove the Etcd Member
+
+sudo ETCDCTL_API=3 etcdctl --endpoints=https://127.0.0.1:2379 \
+  --cacert=/var/lib/rancher/rke2/server/tls/etcd/server-ca.crt \
+  --cert=/var/lib/rancher/rke2/server/tls/etcd/server-client.crt \
+  --key=/var/lib/rancher/rke2/server/tls/etcd/server-client.key \
+  member remove ip-10-0-2-121kasdle
+
+
+
 systemctl stop rke2-server
 
 sudo rm -rf /etc/rancher/rke2
@@ -34,13 +55,59 @@ Copy the same configuration for control plane node to new node (FQDN of new node
 Add FQDN of new node in all control plane node 
 
 
-
 Start the RKE2 Service
 
 sudo systemctl enable rke2-server
 sudo systemctl start rke2-server
 
+ct 16 01:52:24 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:24Z" level=info msg="Pod for kube-apiserver is synced"
+Oct 16 01:52:24 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:24Z" level=info msg="Kube API server is now running"
+Oct 16 01:52:24 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:24Z" level=info msg="Creating rke2-supervisor event broadcaster"
+Oct 16 01:52:24 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:24Z" level=info msg="Setting runtimes"
+Oct 16 01:52:24 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:24Z" level=info msg="Watching for delete of ip-10-0-1-225 Node object"
+Oct 16 01:52:24 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:24Z" level=info msg="Applying Cluster Role Bindings"
+Oct 16 01:52:24 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:24Z" level=info msg="Waiting for untainted node"
+Oct 16 01:52:24 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:24Z" level=info msg="Waiting for cloud-controller-manager privileges to become available"
+Oct 16 01:52:24 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:24Z" level=info msg="Annotations and labels have already set on node: ip-10-0-1-225"
+Oct 16 01:52:24 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:24Z" level=info msg="Tunnel authorizer set Kubelet Port 0.0.0.0:10250"
+Oct 16 01:52:24 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:24Z" level=info msg="Updating embedded CRD addons.k3s.cattle.io"
+Oct 16 01:52:24 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:24Z" level=info msg="Updating embedded CRD etcdsnapshotfiles.k3s.cattle.io"
+Oct 16 01:52:24 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:24Z" level=info msg="Updating embedded CRD helmcharts.helm.cattle.io"
+Oct 16 01:52:24 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:24Z" level=info msg="Updating embedded CRD helmchartconfigs.helm.cattle.io"
+Oct 16 01:52:25 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:25Z" level=info msg="Cluster Role Bindings applied successfully"
+Oct 16 01:52:25 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:25Z" level=info msg="Reconciling ETCDSnapshotFile resources"
+Oct 16 01:52:25 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:25Z" level=info msg="Starting managed etcd node metadata controller"
+Oct 16 01:52:25 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:25Z" level=info msg="Tunnel server egress proxy mode: agent"
+Oct 16 01:52:25 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:25Z" level=info msg="rke2 is up and running"
+Oct 16 01:52:25 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:25Z" level=info msg="Starting dynamiclistener CN filter node controller with SANs: [rke2-nlb-88914a42d48644c0.elb.us-east-1.amazonaws.com ip-10-0-0-205.ec2.internal ip-10-0-1-225.ec2.internal ip-10-0-2-121.ec2.internal 127.0.0.1 ::1 localhost ip-10-0-1-225 10.0.1.225 10.43.0.1 kubernetes kubernetes.default kubernetes.default.svc kubernetes.default.svc.cluster.local]"
+Oct 16 01:52:25 ip-10-0-1-225 systemd[1]: Started Rancher Kubernetes Engine v2 (server).
+Oct 16 01:52:25 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:25Z" level=info msg="Reconciliation of ETCDSnapshotFile resources complete"
+Oct 16 01:52:25 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:25Z" level=info msg="Reconciling ETCDSnapshotFile resources"
+Oct 16 01:52:25 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:25Z" level=info msg="Starting k3s.cattle.io/v1, Kind=Addon controller"
+Oct 16 01:52:25 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:25Z" level=info msg="Creating deploy event broadcaster"
+Oct 16 01:52:25 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:25Z" level=info msg="Starting /v1, Kind=Node controller"
+Oct 16 01:52:25 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:25Z" level=info msg="Cluster dns configmap already exists"
+Oct 16 01:52:25 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:25Z" level=info msg="Reconciliation of ETCDSnapshotFile resources complete"
+Oct 16 01:52:25 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:25Z" level=info msg="Labels and annotations have been set successfully on node: ip-10-0-1-225"
+Oct 16 01:52:25 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:25Z" level=info msg="Starting /v1, Kind=Secret controller"
+Oct 16 01:52:25 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:25Z" level=info msg="Updating TLS secret for kube-system/rke2-serving (count: 19): map[field.cattle.io/projectId:local:p-qmp7n listener.cattle.io/cn-10.0.0.205:10.0.0.205 listener.cattle.io/cn-10.0.1.225:10.0.1.225 listener.cattle.io/cn-10.0.2.121:10.0.2.121 listener.cattle.io/cn-10.43.0.1:10.43.0.1 listener.cattle.io/cn-127.0.0.1:127.0.0.1 listener.cattle.io/cn-__1-f16284:::1 listener.cattle.io/cn-ip-10-0-0-205:ip-10-0-0-205 listener.cattle.io/cn-ip-10-0-0-205.ec2.internal:ip-10-0-0-205.ec2.internal listener.cattle.io/cn-ip-10-0-1-225:ip-10-0-1-225 listener.cattle.io/cn-ip-10-0-1-225.ec2.internal:ip-10-0-1-225.ec2.internal listener.cattle.io/cn-ip-10-0-2-121:ip-10-0-2-121 listener.cattle.io/cn-ip-10-0-2-121.ec2.internal:ip-10-0-2-121.ec2.internal listener.cattle.io/cn-kubernetes:kubernetes listener.cattle.io/cn-kubernetes.default:kubernetes.default listener.cattle.io/cn-kubernetes.default.svc:kubernetes.default.svc listener.cattle.io/cn-kubernetes.default.svc.cluster.local:kubernetes.default.svc.cluster.local listener.cattle.io/cn-localhost:localhost listener.cattle.io/cn-rke2-nlb-88914a42d48644c0.elb.us-e-b23adf:rke2-nlb-88914a42d48644c0.elb.us-east-1.amazonaws.com listener.cattle.io/fingerprint:SHA1=CFD381CD888FDC9CD04A562C6EB7C97EEBCB35BA]"
+Oct 16 01:52:27 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:27Z" level=info msg="Started tunnel to 10.0.0.205:9345"
+Oct 16 01:52:27 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:27Z" level=info msg="Started tunnel to 10.0.1.225:9345"
+Oct 16 01:52:27 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:27Z" level=info msg="Started tunnel to 10.0.2.121:9345"
+Oct 16 01:52:27 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:27Z" level=info msg="Connecting to proxy" url="wss://10.0.0.205:9345/v1-rke2/connect"
+Oct 16 01:52:27 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:27Z" level=info msg="Stopped tunnel to 127.0.0.1:9345"
+Oct 16 01:52:27 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:27Z" level=info msg="Connecting to proxy" url="wss://10.0.1.225:9345/v1-rke2/connect"
+Oct 16 01:52:27 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:27Z" level=info msg="Connecting to proxy" url="wss://10.0.2.121:9345/v1-rke2/connect"
+Oct 16 01:52:27 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:27Z" level=info msg="Proxy done" err="context canceled" url="wss://127.0.0.1:9345/v1-rke2/connect"
+Oct 16 01:52:27 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:27Z" level=info msg="error in remotedialer server [400]: websocket: close 1006 (abnormal closure): unexpected EOF"
+Oct 16 01:52:27 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:27Z" level=info msg="Handling backend connection request [ip-10-0-1-225]"
+Oct 16 01:52:27 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:27Z" level=info msg="Connected to proxy" url="wss://10.0.1.225:9345/v1-rke2/connect"
+Oct 16 01:52:27 ip-10-0-1-225 rke2[394744]: time="2025-10-16T01:52:27Z" level=info msg="Remotedialer connected to proxy" url="wss://10.0.1.225:9345/v1-rke2/connect"
+
+
+
 
 Verify the Node Joins the Cluster
 
 kubectl get nodes -o wide
+
